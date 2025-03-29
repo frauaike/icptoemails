@@ -10,6 +10,7 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
+from sqlalchemy import text
 
 # revision identifiers, used by Alembic.
 revision: str = '001'
@@ -18,14 +19,40 @@ branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
+def create_enum_if_not_exists(name: str, values: list[str]) -> None:
+    """Create an enum type if it doesn't exist."""
+    conn = op.get_bind()
+    result = conn.execute(text(f"SELECT EXISTS (SELECT 1 FROM pg_type WHERE typname = '{name}')"))
+    exists = result.scalar()
+    
+    if not exists:
+        values_str = ", ".join(f"'{v}'" for v in values)
+        conn.execute(text(f"CREATE TYPE {name} AS ENUM ({values_str})"))
+
+
 def upgrade() -> None:
-    # Create enum types
-    userrole = postgresql.ENUM('free', 'pro', 'admin', name='userrole', create_type=True)
-    accountstatus = postgresql.ENUM('active', 'inactive', 'suspended', 'deleted', name='accountstatus', create_type=True)
-    subscriptionstatus = postgresql.ENUM('active', 'past_due', 'canceled', 'trialing', 'unpaid', name='subscriptionstatus', create_type=True)
-    subscriptionplan = postgresql.ENUM('free', 'pro', name='subscriptionplan', create_type=True)
-    actiontype = postgresql.ENUM('create', 'read', 'update', 'delete', 'login', 'logout', 'password_change', 'mfa_enable', 'mfa_disable', 'subscription_change', 'data_export', 'data_delete', name='actiontype', create_type=True)
-    resourcetype = postgresql.ENUM('user', 'icp', 'email_analysis', 'subscription', 'system', name='resourcetype', create_type=True)
+    # Drop existing tables if they exist
+    op.execute('DROP TABLE IF EXISTS audit_logs CASCADE')
+    op.execute('DROP TABLE IF EXISTS subscriptions CASCADE')
+    op.execute('DROP TABLE IF EXISTS email_analyses CASCADE')
+    op.execute('DROP TABLE IF EXISTS icps CASCADE')
+    op.execute('DROP TABLE IF EXISTS users CASCADE')
+
+    # Drop existing enum types if they exist
+    op.execute('DROP TYPE IF EXISTS actiontype CASCADE')
+    op.execute('DROP TYPE IF EXISTS resourcetype CASCADE')
+    op.execute('DROP TYPE IF EXISTS subscriptionplan CASCADE')
+    op.execute('DROP TYPE IF EXISTS subscriptionstatus CASCADE')
+    op.execute('DROP TYPE IF EXISTS accountstatus CASCADE')
+    op.execute('DROP TYPE IF EXISTS userrole CASCADE')
+
+    # Create enum types using raw SQL
+    create_enum_if_not_exists('userrole', ['free', 'pro', 'admin'])
+    create_enum_if_not_exists('accountstatus', ['active', 'inactive', 'suspended', 'deleted'])
+    create_enum_if_not_exists('subscriptionstatus', ['active', 'past_due', 'canceled', 'trialing', 'unpaid'])
+    create_enum_if_not_exists('subscriptionplan', ['free', 'pro'])
+    create_enum_if_not_exists('actiontype', ['create', 'read', 'update', 'delete', 'login', 'logout', 'password_change', 'mfa_enable', 'mfa_disable', 'subscription_change', 'data_export', 'data_delete'])
+    create_enum_if_not_exists('resourcetype', ['user', 'icp', 'email_analysis', 'subscription', 'system'])
 
     # Create users table
     op.create_table(
@@ -41,8 +68,8 @@ def upgrade() -> None:
         sa.Column('mfa_secret', sa.String(), nullable=True),
         sa.Column('failed_login_attempts', sa.Integer(), default=0),
         sa.Column('last_login', sa.DateTime(), nullable=True),
-        sa.Column('account_status', postgresql.ENUM('active', 'inactive', 'suspended', 'deleted', name='accountstatus'), default='active'),
-        sa.Column('role', postgresql.ENUM('free', 'pro', 'admin', name='userrole'), default='free'),
+        sa.Column('account_status', sa.String(), default='active'),
+        sa.Column('role', sa.String(), default='free'),
         sa.Column('marketing_consent', sa.Boolean(), default=False),
         sa.Column('data_processing_consent', sa.Boolean(), default=False),
         sa.Column('consent_timestamp', sa.DateTime(), nullable=True),
@@ -51,6 +78,10 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_users_email'), 'users', ['email'], unique=True)
+
+    # Add check constraints for enum columns
+    op.execute("ALTER TABLE users ADD CONSTRAINT users_account_status_check CHECK (account_status IN ('active', 'inactive', 'suspended', 'deleted'))")
+    op.execute("ALTER TABLE users ADD CONSTRAINT users_role_check CHECK (role IN ('free', 'pro', 'admin'))")
 
     # Create icps table
     op.create_table(
@@ -105,8 +136,8 @@ def upgrade() -> None:
         sa.Column('user_id', sa.Integer(), nullable=False),
         sa.Column('stripe_customer_id', sa.String(), nullable=True),
         sa.Column('stripe_subscription_id', sa.String(), nullable=True),
-        sa.Column('plan', postgresql.ENUM('free', 'pro', name='subscriptionplan'), default='free'),
-        sa.Column('status', postgresql.ENUM('active', 'past_due', 'canceled', 'trialing', 'unpaid', name='subscriptionstatus'), default='active'),
+        sa.Column('plan', sa.String(), default='free'),
+        sa.Column('status', sa.String(), default='active'),
         sa.Column('current_period_start', sa.DateTime(), nullable=True),
         sa.Column('current_period_end', sa.DateTime(), nullable=True),
         sa.Column('cancel_at_period_end', sa.Boolean(), default=False),
@@ -122,13 +153,17 @@ def upgrade() -> None:
     op.create_index(op.f('ix_subscriptions_stripe_customer_id'), 'subscriptions', ['stripe_customer_id'], unique=True)
     op.create_index(op.f('ix_subscriptions_stripe_subscription_id'), 'subscriptions', ['stripe_subscription_id'], unique=True)
 
+    # Add check constraints for enum columns
+    op.execute("ALTER TABLE subscriptions ADD CONSTRAINT subscriptions_plan_check CHECK (plan IN ('free', 'pro'))")
+    op.execute("ALTER TABLE subscriptions ADD CONSTRAINT subscriptions_status_check CHECK (status IN ('active', 'past_due', 'canceled', 'trialing', 'unpaid'))")
+
     # Create audit_logs table
     op.create_table(
         'audit_logs',
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('user_id', sa.Integer(), nullable=False),
-        sa.Column('action', postgresql.ENUM('create', 'read', 'update', 'delete', 'login', 'logout', 'password_change', 'mfa_enable', 'mfa_disable', 'subscription_change', 'data_export', 'data_delete', name='actiontype'), nullable=False),
-        sa.Column('resource_type', postgresql.ENUM('user', 'icp', 'email_analysis', 'subscription', 'system', name='resourcetype'), nullable=False),
+        sa.Column('action', sa.String(), nullable=False),
+        sa.Column('resource_type', sa.String(), nullable=False),
         sa.Column('resource_id', sa.String(), nullable=True),
         sa.Column('ip_address', sa.String(), nullable=True),
         sa.Column('user_agent', sa.String(), nullable=True),
@@ -137,6 +172,10 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
         sa.PrimaryKeyConstraint('id')
     )
+
+    # Add check constraints for enum columns
+    op.execute("ALTER TABLE audit_logs ADD CONSTRAINT audit_logs_action_check CHECK (action IN ('create', 'read', 'update', 'delete', 'login', 'logout', 'password_change', 'mfa_enable', 'mfa_disable', 'subscription_change', 'data_export', 'data_delete'))")
+    op.execute("ALTER TABLE audit_logs ADD CONSTRAINT audit_logs_resource_type_check CHECK (resource_type IN ('user', 'icp', 'email_analysis', 'subscription', 'system'))")
 
 
 def downgrade() -> None:
@@ -148,9 +187,9 @@ def downgrade() -> None:
     op.drop_table('users')
 
     # Drop enum types
-    op.execute('DROP TYPE actiontype')
-    op.execute('DROP TYPE resourcetype')
-    op.execute('DROP TYPE subscriptionplan')
-    op.execute('DROP TYPE subscriptionstatus')
-    op.execute('DROP TYPE accountstatus')
-    op.execute('DROP TYPE userrole') 
+    op.execute('DROP TYPE IF EXISTS actiontype')
+    op.execute('DROP TYPE IF EXISTS resourcetype')
+    op.execute('DROP TYPE IF EXISTS subscriptionplan')
+    op.execute('DROP TYPE IF EXISTS subscriptionstatus')
+    op.execute('DROP TYPE IF EXISTS accountstatus')
+    op.execute('DROP TYPE IF EXISTS userrole') 

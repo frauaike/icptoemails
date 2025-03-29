@@ -23,6 +23,7 @@ def upgrade() -> None:
     op.create_table('icp_responses',
     sa.Column('id', sa.String(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('icp_id', sa.Integer(), nullable=False),
     sa.Column('questionnaire_version', sa.String(), nullable=False),
     sa.Column('responses', sa.JSON(), nullable=False),
     sa.Column('status', sa.String(), nullable=True),
@@ -31,6 +32,7 @@ def upgrade() -> None:
     sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
     sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['icp_id'], ['icps.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index('idx_icp_response_status', 'icp_responses', ['status'], unique=False)
