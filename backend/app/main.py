@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from app.core.config import settings
+from app.api.v1.api import api_router
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -22,9 +23,8 @@ app.add_middleware(
 # Add GZip compression
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
-# Import and include routers
-# from app.api.v1.api import api_router
-# app.include_router(api_router, prefix=settings.API_V1_PREFIX)
+# Include API router
+app.include_router(api_router, prefix=settings.API_V1_PREFIX)
 
 @app.get("/")
 async def root():

@@ -1,48 +1,44 @@
 from datetime import datetime
-from sqlalchemy import Column, String, DateTime, Integer, ForeignKey, Enum, Boolean
+from enum import Enum
+from typing import Optional
+
+from sqlalchemy import Boolean, Column, DateTime, Enum as SQLEnum, ForeignKey, Integer, String, Index, CheckConstraint, func
 from sqlalchemy.orm import relationship
-from app.db.session import Base
-import enum
 
-class SubscriptionStatus(str, enum.Enum):
-    ACTIVE = "active"
-    PAST_DUE = "past_due"
-    CANCELED = "canceled"
-    TRIALING = "trialing"
-    UNPAID = "unpaid"
+from app.models.base import Base
 
-class SubscriptionPlan(str, enum.Enum):
+
+class SubscriptionPlan(str, Enum):
     FREE = "free"
     PRO = "pro"
+    ENTERPRISE = "enterprise"
+
+
+class SubscriptionStatus(str, Enum):
+    ACTIVE = "active"
+    CANCELLED = "cancelled"
+    EXPIRED = "expired"
+    TRIAL = "trial"
+
 
 class Subscription(Base):
     __tablename__ = "subscriptions"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, unique=True)
-    
-    # Subscription Details
-    stripe_customer_id = Column(String, unique=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    plan_name = Column(String, nullable=False)
     stripe_subscription_id = Column(String, unique=True)
-    plan = Column(Enum(SubscriptionPlan), default=SubscriptionPlan.FREE)
-    status = Column(Enum(SubscriptionStatus), default=SubscriptionStatus.ACTIVE)
-    
-    # Billing Information
-    current_period_start = Column(DateTime)
-    current_period_end = Column(DateTime)
-    cancel_at_period_end = Column(Boolean, default=False)
-    
-    # Usage Tracking
-    monthly_analysis_count = Column(Integer, default=0)
-    last_billing_date = Column(DateTime)
-    
-    # Trial Information
-    trial_start = Column(DateTime)
-    trial_end = Column(DateTime)
-    
-    # Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
+    is_active = Column(Boolean, default=True)
+    start_date = Column(DateTime(timezone=True), server_default=func.now())
+    end_date = Column(DateTime(timezone=True))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
     # Relationships
-    user = relationship("User", back_populates="subscription") 
+    user = relationship("User", back_populates="subscription")
+
+    # Indexes
+    __table_args__ = (
+        Index('idx_subscription_user_id', 'user_id'),
+        Index('idx_subscription_plan', 'plan_name'),
+    ) 

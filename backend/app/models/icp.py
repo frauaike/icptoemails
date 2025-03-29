@@ -1,36 +1,48 @@
 from datetime import datetime
-from sqlalchemy import Column, String, DateTime, Integer, ForeignKey, JSON
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, func, JSON, Index
 from sqlalchemy.orm import relationship
-from app.db.session import Base
+from app.models.base import Base
+
 
 class ICP(Base):
     __tablename__ = "icps"
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    
-    # Basic Information
     name = Column(String, nullable=False)
+    description = Column(Text)
     industry = Column(String)
     company_size = Column(String)
-    
-    # Persona Details
-    persona_title = Column(String)
-    persona_responsibilities = Column(String)
-    
-    # Pain Points and Goals
-    pain_points = Column(JSON)  # Store as JSON array
-    goals = Column(JSON)  # Store as JSON array
-    
-    # Additional Context
-    key_metrics = Column(JSON)  # Store as JSON object
-    budget_range = Column(String)
-    decision_making_process = Column(String)
-    
-    # Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
     # Relationships
     user = relationship("User", back_populates="icps")
-    email_analyses = relationship("EmailAnalysis", back_populates="icp") 
+    icp_responses = relationship("ICPResponse", back_populates="icp")
+
+class ICPResponse(Base):
+    __tablename__ = "icp_responses"
+
+    id = Column(String, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    icp_id = Column(Integer, ForeignKey("icps.id"), nullable=False)
+    questionnaire_version = Column(String, nullable=False)
+    responses = Column(JSON, nullable=False)
+    status = Column(String, default="draft")  # draft, completed, archived
+    score = Column(JSON, nullable=True)  # Store AI analysis results
+    
+    # Timestamps
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # Relationships
+    user = relationship("User", back_populates="icp_responses")
+    icp = relationship("ICP", back_populates="icp_responses")
+
+    # Indexes
+    __table_args__ = (
+        Index('idx_icp_response_user_id', 'user_id'),
+        Index('idx_icp_response_status', 'status'),
+        Index('idx_icp_response_version', 'questionnaire_version'),
+        {'extend_existing': True}
+    ) 
