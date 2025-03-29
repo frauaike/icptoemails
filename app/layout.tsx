@@ -1,31 +1,26 @@
-import type React from "react"
-import type { Metadata } from "next/types"
-import { Inter } from "next/font/google"
-import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
+import { Inter } from 'next/font/google';
+import AuthProvider from '@/components/providers/session-provider';
+import './globals.css';
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ['latin'] });
 
-export const metadata: Metadata = {
-  title: "WhisperSales AI - Cold Email Optimization",
-  description: "Write cold emails that actually get replies",
-    generator: 'v0.dev'
-}
+export const metadata = {
+  title: 'WhisperSales AI',
+  description: 'AI-powered cold email analysis for better sales outreach',
+};
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} bg-[#0a0a0a] min-h-screen`}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
-          {children}
-        </ThemeProvider>
+    <html lang="en">
+      <body className={inter.className}>
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
-  )
+  );
 }
 
 
