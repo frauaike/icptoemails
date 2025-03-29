@@ -49,11 +49,11 @@ class User(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
     # Relationships
-    icps = relationship("ICP", back_populates="user")
+    icps = relationship("ICP", back_populates="user", cascade="all, delete-orphan")
     email_analyses = relationship("EmailAnalysis", back_populates="user")
     subscription = relationship("Subscription", back_populates="user", uselist=False)
     audit_logs = relationship("AuditLog", back_populates="user")
-    icp_responses = relationship("ICPResponse", back_populates="user")
+    icp_responses = relationship("ICPResponse", back_populates="user", cascade="all, delete-orphan")
 
     is_active = Column(Boolean, default=True)
     is_superuser = Column(Boolean, default=False) 

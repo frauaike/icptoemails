@@ -18,14 +18,15 @@ class ICP(Base):
 
     # Relationships
     user = relationship("User", back_populates="icps")
-    icp_responses = relationship("ICPResponse", back_populates="icp")
+    responses = relationship("ICPResponse", back_populates="icp", cascade="all, delete-orphan")
+
 
 class ICPResponse(Base):
     __tablename__ = "icp_responses"
 
     id = Column(String, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    icp_id = Column(Integer, ForeignKey("icps.id"), nullable=False)
+    icp_id = Column(Integer, ForeignKey("icps.id", ondelete="CASCADE"), nullable=False)
     questionnaire_version = Column(String, nullable=False)
     responses = Column(JSON, nullable=False)
     status = Column(String, default="draft")  # draft, completed, archived
@@ -37,7 +38,7 @@ class ICPResponse(Base):
     
     # Relationships
     user = relationship("User", back_populates="icp_responses")
-    icp = relationship("ICP", back_populates="icp_responses")
+    icp = relationship("ICP", back_populates="responses")
 
     # Indexes
     __table_args__ = (
