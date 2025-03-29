@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Mail, Target, Zap } from "lucide-react"
+import { ArrowRight, Mail, Target, Zap, Star, Check } from "lucide-react"
 
 export default function LandingPage() {
   return (
@@ -63,7 +63,7 @@ export default function LandingPage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="text-gray-300 border-gray-700 hover:bg-gray-800 rounded-full"
+                  className="bg-white text-black hover:bg-gray-100 rounded-full"
                 >
                   See Demo
                 </Button>
@@ -156,7 +156,7 @@ export default function LandingPage() {
                           sales enablement platform could help your team hit their targets more consistently..."
                         </p>
 
-                        <Button variant="outline" size="sm" className="w-full text-xs border-gray-700">
+                        <Button variant="outline" size="sm" className="w-full text-xs bg-white text-black hover:bg-gray-100">
                           View Details
                         </Button>
                       </div>
@@ -173,12 +173,12 @@ export default function LandingPage() {
                           Create New ICP
                         </Button>
 
-                        <Button variant="outline" className="w-full justify-start text-sm border-gray-700">
+                        <Button variant="outline" className="w-full justify-start text-sm bg-white text-black hover:bg-gray-100">
                           <Mail className="mr-2 h-4 w-4" />
                           Analyze Email
                         </Button>
 
-                        <Button variant="outline" className="w-full justify-start text-sm border-gray-700">
+                        <Button variant="outline" className="w-full justify-start text-sm bg-white text-black hover:bg-gray-100">
                           <Zap className="mr-2 h-4 w-4" />
                           View Templates
                         </Button>
@@ -309,6 +309,237 @@ export default function LandingPage() {
             </p>
             <Button size="lg" className="bg-black text-white hover:bg-gray-900 rounded-full px-8">
               Get Started Today
+            </Button>
+          </div>
+        </section>
+
+        {/* Testimonials Section */}
+        <section id="testimonials" className="container mx-auto px-4 py-20 bg-[#0a0a0a]">
+          <div className="text-center mb-16">
+            <div className="inline-block bg-[#1a1a1a] text-[#7c3aed] text-xs font-medium px-3 py-1 rounded-full mb-4">
+              Testimonials
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Trusted by Sales Professionals</h2>
+            <p className="text-gray-300 max-w-2xl mx-auto">
+              See what our users are saying about how WhisperSales AI has transformed their cold email strategy.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-[#111111] p-6 rounded-xl border border-gray-800 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <Star className="h-4 w-4 text-[#f59e0b]" />
+                <Star className="h-4 w-4 text-[#f59e0b]" />
+                <Star className="h-4 w-4 text-[#f59e0b]" />
+                <Star className="h-4 w-4 text-[#f59e0b]" />
+                <Star className="h-4 w-4 text-[#f59e0b]" />
+              </div>
+              <p className="text-gray-300 mb-6">
+                "WhisperSales AI has completely transformed our outreach strategy. Our response rates have increased by
+                35% since we started using it to analyze our cold emails."
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#2dd4bf]/20 flex items-center justify-center text-[#2dd4bf]">
+                  <span className="font-bold">JD</span>
+                </div>
+                <div>
+                  <p className="font-medium text-sm">Jessica Davis</p>
+                  <p className="text-xs text-gray-400">Sales Director, TechCorp</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-[#111111] p-6 rounded-xl border border-gray-800 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <Star className="h-4 w-4 text-[#f59e0b]" />
+                <Star className="h-4 w-4 text-[#f59e0b]" />
+                <Star className="h-4 w-4 text-[#f59e0b]" />
+                <Star className="h-4 w-4 text-[#f59e0b]" />
+                <Star className="h-4 w-4 text-[#f59e0b]" />
+              </div>
+              <p className="text-gray-300 mb-6">
+                "The ICP builder is a game-changer. It helped us really understand our target audience and craft
+                messages that speak directly to their pain points. Worth every penny."
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#7c3aed]/20 flex items-center justify-center text-[#7c3aed]">
+                  <span className="font-bold">MR</span>
+                </div>
+                <div>
+                  <p className="font-medium text-sm">Michael Rodriguez</p>
+                  <p className="text-xs text-gray-400">Growth Lead, Startup Inc</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-[#111111] p-6 rounded-xl border border-gray-800 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <Star className="h-4 w-4 text-[#f59e0b]" />
+                <Star className="h-4 w-4 text-[#f59e0b]" />
+                <Star className="h-4 w-4 text-[#f59e0b]" />
+                <Star className="h-4 w-4 text-[#f59e0b]" />
+                <Star className="h-4 w-4 text-[#f59e0b]" />
+              </div>
+              <p className="text-gray-300 mb-6">
+                "As a sales coach, I recommend WhisperSales AI to all my clients. The detailed feedback it provides
+                helps sales reps learn and improve with every email they write."
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#f59e0b]/20 flex items-center justify-center text-[#f59e0b]">
+                  <span className="font-bold">SL</span>
+                </div>
+                <div>
+                  <p className="font-medium text-sm">Sarah Lee</p>
+                  <p className="text-xs text-gray-400">Sales Coach, SalesPro</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Pricing Section */}
+        <section id="pricing" className="container mx-auto px-4 py-20">
+          <div className="text-center mb-16">
+            <div className="inline-block bg-[#1a1a1a] text-[#2dd4bf] text-xs font-medium px-3 py-1 rounded-full mb-4">
+              Pricing
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Simple, Transparent Pricing</h2>
+            <p className="text-gray-300 max-w-2xl mx-auto">
+              Choose the plan that fits your needs. No hidden fees or long-term commitments.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            <div className="bg-[#111111] rounded-xl border border-gray-800 shadow-sm overflow-hidden">
+              <div className="p-6">
+                <h3 className="text-xl font-bold mb-2">Free Plan</h3>
+                <div className="flex items-end gap-1 mb-4">
+                  <span className="text-4xl font-bold">$0</span>
+                  <span className="text-gray-400 mb-1">/month</span>
+                </div>
+                <p className="text-gray-300 mb-6">Perfect for individuals just getting started with cold emails.</p>
+
+                <ul className="space-y-3 mb-6">
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-[#2dd4bf] mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-300">5 email analyses per month</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-[#2dd4bf] mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-300">3 ICPs maximum</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-[#2dd4bf] mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-300">Basic AI suggestions</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-[#2dd4bf] mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-300">Email performance tracking</span>
+                  </li>
+                </ul>
+
+                <Button className="w-full bg-[#2dd4bf] hover:bg-[#14b8a6] text-black rounded-full">Get Started</Button>
+              </div>
+            </div>
+
+            <div className="bg-[#111111] rounded-xl border border-[#7c3aed] shadow-sm overflow-hidden relative">
+              <div className="absolute top-0 right-0 bg-[#7c3aed] text-white text-xs px-3 py-1 rounded-bl-lg">
+                Most Popular
+              </div>
+              <div className="p-6">
+                <h3 className="text-xl font-bold mb-2">Pro Plan</h3>
+                <div className="flex items-end gap-1 mb-4">
+                  <span className="text-4xl font-bold">$29</span>
+                  <span className="text-gray-400 mb-1">/month</span>
+                </div>
+                <p className="text-gray-300 mb-6">
+                  For sales professionals who want to maximize their outreach effectiveness.
+                </p>
+
+                <ul className="space-y-3 mb-6">
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-[#7c3aed] mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-300">50 email analyses per month</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-[#7c3aed] mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-300">Unlimited ICPs</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-[#7c3aed] mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-300">Advanced AI suggestions</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-[#7c3aed] mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-300">Detailed performance analytics</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-[#7c3aed] mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-300">Email template library</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-[#7c3aed] mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-300">Priority support</span>
+                  </li>
+                </ul>
+
+                <Button className="w-full bg-[#7c3aed] hover:bg-[#6d28d9] text-white rounded-full">Upgrade to Pro</Button>
+              </div>
+            </div>
+
+            <div className="bg-[#111111] rounded-xl border border-gray-800 shadow-sm overflow-hidden">
+              <div className="p-6">
+                <h3 className="text-xl font-bold mb-2">Enterprise Plan</h3>
+                <div className="flex items-end gap-1 mb-4">
+                  <span className="text-4xl font-bold">$99</span>
+                  <span className="text-gray-400 mb-1">/month</span>
+                </div>
+                <p className="text-gray-300 mb-6">For teams and organizations with high-volume outreach needs.</p>
+
+                <ul className="space-y-3 mb-6">
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-[#f59e0b] mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-300">Unlimited email analyses</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-[#f59e0b] mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-300">Unlimited ICPs</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-[#f59e0b] mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-300">Premium AI suggestions</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-[#f59e0b] mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-300">Advanced analytics dashboard</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-[#f59e0b] mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-300">Custom email templates</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-[#f59e0b] mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-300">Dedicated account manager</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-[#f59e0b] mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-300">API access</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-[#f59e0b] mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-300">Team collaboration features</span>
+                  </li>
+                </ul>
+
+                <Button className="w-full bg-[#f59e0b] hover:bg-[#d97706] text-black rounded-full">Contact Sales</Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-12 text-center">
+            <p className="text-gray-300 mb-4">Need a custom solution for your specific requirements?</p>
+            <Button variant="outline" className="bg-white text-black hover:bg-gray-100 rounded-full">
+              Schedule a Consultation
             </Button>
           </div>
         </section>
